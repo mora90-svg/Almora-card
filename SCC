@@ -1,41 +1,33 @@
-body { 
-  margin: 0; 
-  background: #000 !important; /* ده أهم سطر لحل المشكلة */
-  overflow: hidden; 
-  display: flex; 
-  justify-content: center; 
-  align-items: center; 
-  height: 100vh;
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+// صنع المجسم الحي
+const geometry = new THREE.TorusKnotGeometry(2, 0.6, 150, 20);
+const material = new THREE.MeshBasicMaterial({ color: 0x00f2fe, wireframe: true, transparent: true, opacity: 0.4 });
+const lifeForm = new THREE.Mesh(geometry, material);
+scene.add(lifeForm);
+
+camera.position.z = 7;
+
+function animate() {
+  requestAnimationFrame(animate);
+  lifeForm.rotation.x += 0.01;
+  lifeForm.rotation.y += 0.01;
+  // نبض الحياة
+  let pulse = 1 + Math.sin(Date.now() * 0.002) * 0.15;
+  lifeForm.scale.set(pulse, pulse, pulse);
+  renderer.render(scene, camera);
 }
 
-#canvas-container { position: absolute; inset: 0; z-index: 0; }
+document.addEventListener('touchmove', (e) => {
+  let t = e.touches[0];
+  let cx = (window.innerWidth / 2 - t.pageX) / 15;
+  let cy = (window.innerHeight / 2 - t.pageY) / 15;
+  document.querySelector('.card').style.transform = `rotateY(${-cx}deg) rotateX(${cy}deg)`;
+});
 
-.card {
-  width: 300px; height: 500px; position: relative; z-index: 1; 
-  transform-style: preserve-3d; transition: transform 0.1s;
-}
-
-.glass-layer {
-  position: absolute; inset: 0;
-  background: rgba(255, 255, 255, 0.05); /* شفافية زجاجية */
-  backdrop-filter: blur(15px);
-  border: 1px solid rgba(0, 242, 254, 0.3);
-  border-radius: 25px;
-}
-
-.content { position: relative; z-index: 2; color: white; text-align: center; padding: 25px; }
-
-.profile-img {
-  width: 100px; height: 100px; border-radius: 50%;
-  background: url('https://i.postimg.cc/PCY2SfTx/FB-IMG-1777600313632.jpg') center/cover;
-  margin: 0 auto 20px; border: 3px solid #00f2fe;
-  box-shadow: 0 0 20px #00f2fe;
-}
-
-.action-btn {
-  width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #00f2fe;
-  background: rgba(0, 242, 254, 0.1); color: #00f2fe; font-weight: bold;
-  cursor: pointer; margin-top: 10px; transition: 0.3s;
-}
-
-.action-btn.fb { border-color: #1877F2; color: #1877F2; }
+animate();
