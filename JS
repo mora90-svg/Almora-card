@@ -1,0 +1,18 @@
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+const geometry = new THREE.TorusKnotGeometry(2, 0.6, 150, 20);
+const material = new THREE.MeshBasicMaterial({ color: 0x00f2fe, wireframe: true, transparent: true, opacity: 0.3 });
+const lifeForm = new THREE.Mesh(geometry, material);
+scene.add(lifeForm);
+camera.position.z = 7;
+
+document.addEventListener('touchmove', (e) => {
+  let t = e.touches[0];
+  let cardX = (window.innerWidth / 2 - t.pageX) / 15;
+  let cardY = (window.innerHeight / 2 - t.pageY) / 15;
+  document.querySelector('.card').style.transform = `rotateY(${-cardX}deg) rotateX(${cardY}deg)`;
+});
